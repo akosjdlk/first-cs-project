@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace first_cs_project
+﻿
+namespace first_cs_project.src.classes
 {
 	internal class Menu
 	{
@@ -17,12 +12,14 @@ namespace first_cs_project
 			{
 				if (value < 0)
 				{
-					_selectedIndex = _menuOptions.Count-1;
+					_selectedIndex = _menuOptions.Count - 1;
 
-				} else if (value > _menuOptions.Count-1) {
+				} else if (value > _menuOptions.Count - 1)
+				{
 					_selectedIndex = 0;
 
-				} else {
+				} else
+				{
 					_selectedIndex = value;
 				}
 				WriteOptions();
@@ -35,10 +32,9 @@ namespace first_cs_project
 			_menuOptions.Insert(0, backOptionName);
 		}
 
-
 		static void Write(string? value) => Console.WriteLine(value);
 
-		public int Step()
+		public int Call()
 		{
 			WriteOptions();
 			return ListenForInput();
@@ -65,7 +61,7 @@ namespace first_cs_project
 			Console.ResetColor();
 		}
 
-		public string TextInput(string? prompt)
+		public static string TextInput(string? prompt)
 		{
 			Console.Clear();
 			Console.Write(prompt);
@@ -73,33 +69,33 @@ namespace first_cs_project
 			return input;
 		}
 
-		public void WaitForEnter(string? prompt)
+		public static void WaitForEnter(string? prompt)
 		{
 			Console.WriteLine("\n");
 			Console.Write(prompt);
 			while (Console.ReadKey(true).Key != ConsoleKey.Enter) { }
 		}
 
-		public int? NumericInput(string prompt, bool allowNegative = false)
+		public static int? NumericInput(string prompt, bool allowNegative = false, bool allowZero = true)
 		{
 			Console.Clear();
 			Console.Write(prompt);
 			string number = "";
-			while (true) 
+			while (true)
 			{
 				string key = Console.ReadKey(true).Key.ToString();
 
 				if (key == "Escape")
 					return null;
 
-				if (key == "Enter" && number != "")
+				if (key == "Enter" && number != "" && number != "-")
 					break;
 
 				if (key == "Backspace" && number != "")
 				{
 					number = number.Remove(number.Length - 1);
 					Console.Clear();
-					Console.Write(prompt+number);
+					Console.Write(prompt + number);
 					continue;
 				}
 
@@ -110,8 +106,11 @@ namespace first_cs_project
 					continue;
 				}
 
-				if (int.TryParse(key.Substring(1), out int num))
+				if (int.TryParse(key.AsSpan(1), out int num))
 				{
+					if (!allowZero && num == 0 && (number == "-" || number == ""))
+						continue;
+
 					number += num.ToString();
 					Console.Write(num);
 				}
@@ -125,26 +124,27 @@ namespace first_cs_project
 			while (true)
 			{
 				string key = Console.ReadKey(true).Key.ToString();
-				if (int.TryParse(key.Substring(1), out int num))
+				if (int.TryParse(key.AsSpan(1), out int num))
 				{
+					if (num == 0)
+						return 0;
+
 					
-					if (0 <= num && num <= _menuOptions.Count-1)
+					if (0 <= num && num <= _menuOptions.Count - 1 && _menuOptions.Count - 1 <= 9)
 						return num;
-					else
-						continue;
+
+					continue;
 				}
 
 				switch (key.ToString())
 				{
-					case "S":
 					case "DownArrow":
 						SelectedIndex++;
-						continue;
+						break;
 
-					case "W":
 					case "UpArrow":
 						SelectedIndex--;
-						continue;
+						break;
 
 					case "Escape":
 						return 0;

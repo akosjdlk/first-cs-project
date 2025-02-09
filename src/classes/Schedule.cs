@@ -2,25 +2,24 @@
 
 internal class Schedule
 {
-	private double _accuracy;
+	public readonly double Accuracy;
 
-	public double Accuracy
-	{
-		get { return _accuracy; }
-		set
-		{
-			if (value < 0 || value > 1)
-				throw new ArgumentException("'Accuracy' must be between 0 and 1");
-
-			_accuracy = value;
-		}
-	}
-
-	public int Frequency { get; init; }
+	public readonly int Frequency;
 
 	public Schedule(double accuracy, int frequency)
 	{
+		if (accuracy < 0.0 || accuracy > 1.0)
+		{
+			throw new ArgumentException("'accuracy' should be between 0.0 and 1.0");
+		}
+
 		Accuracy = accuracy;
+
+		if (10 > frequency || frequency > 360)
+		{
+			throw new ArgumentException("'frequency' should be between 10 and 360");
+		}
+
 		Frequency = frequency;
 	}
 

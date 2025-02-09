@@ -1,26 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+using System.Diagnostics;
 
-namespace first_cs_project
+namespace first_cs_project.src.classes.trains
 {
-    internal abstract class Train
-    {
+	internal abstract class Train
+	{
+		// Properties
 		protected readonly int _maxCapacity;
 		public Schedule Schedule { get; }
+		public List<IMovable> Contents { get; private set;  } = [];
+		public string Id { get; } = Guid.NewGuid().ToString().Split("-")[0];
 
-		public List<IMovable> Contents { get; } = new List<IMovable>();
+		protected static readonly Random _r = new();
+		protected int CurrentTick;
+		protected int CurrentDelay;
+
+		// Abstracts
 		protected abstract bool LoadCheck(IMovable movable);
 
+		public abstract void RandomizeContents();
+
+		public abstract void Tick(Log log);
+
+		// Methods
 		protected Train(int capacity, Schedule schedule, List<IMovable>? initialContents = null)
 		{
 			_maxCapacity = capacity;
 			Schedule = schedule;
+			CurrentDelay = -Schedule.CalculateDelay();
+			CurrentTick = CurrentDelay;
 
 			if (initialContents != null)
 			{
@@ -31,7 +39,7 @@ namespace first_cs_project
 
 		public override string ToString()
 		{
-			return $"Train(capacity={_maxCapacity-GetRemainingCapacity()}/{_maxCapacity}, accuracy={Schedule.Accuracy}, frequency={Schedule.Frequency})";
+			return $"Train(capacity={_maxCapacity}, accuracy={Schedule.Accuracy}, frequency={Schedule.Frequency})";
 		}
 
 		protected int GetRemainingCapacity()
@@ -45,20 +53,20 @@ namespace first_cs_project
 
 		public int Load(IMovable movable)
 		{
-			if (!LoadCheck(movable)) {
+			if (!LoadCheck(movable))
+			{
 				return -1;
 			}
 
 			if (GetRemainingCapacity() >= movable.UsedSpace)
 			{
 				Contents.Add(movable);
-				return Contents.Count-1; // current index
+				return Contents.Count - 1; // current index
 			}
 
 			return -1;
 		}
-
-		public bool UnLoad(IMovable? movable, int? index)
+		public bool UnLoad(IMovable? movable = null, int? index = null)
 		{
 			if (movable == null && index == null)
 			{
@@ -67,7 +75,7 @@ namespace first_cs_project
 
 			if (movable != null && index != null)
 			{
-				throw new WarningException("'movable' and 'index' are mutually exclusive. 'movable' will take precedence.");
+				throw new Exception("'movable' and 'index' are mutually exclusive. 'movable' will take precedence.");
 			}
 
 
@@ -82,7 +90,7 @@ namespace first_cs_project
 
 				}
 			}
-			
+
 			if (index != null)
 			{
 				try
@@ -99,6 +107,5 @@ namespace first_cs_project
 			return false;
 
 		}
-
 	}
 }
