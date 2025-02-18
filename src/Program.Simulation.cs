@@ -29,12 +29,11 @@ namespace first_cs_project
 					break;
 
 				case 4:
-					while (BrowseLogs(null) != null)
+					while (BrowseLogs(null))
 					{
-						Console.Clear();
 						Menu.WaitForEnter("Press Enter to continue. . .");
 					}
-					break;
+					return false;
 
 				default:
 					return false;
@@ -44,13 +43,15 @@ namespace first_cs_project
 
 		static void SimulateDays(int day)
 		{
-			Console.Clear();
+			
 			for (int i = 0;i < day;i++)
 			{
+				Console.Clear();Console.WriteLine("\x1b[3J");
 				Console.WriteLine($"Simulating day {i+1}/{day}. (Current day: {currentDay})");
 				Inner();
 			}
 
+			Console.Clear();Console.WriteLine("\x1b[3J");
 			if (day == 1)
 			{
 				Console.WriteLine("A day has been simulated, check the logs for details.");
@@ -98,12 +99,13 @@ namespace first_cs_project
 			}
 		}
 
-		static bool? BrowseLogs(int? day)
+		static bool BrowseLogs(int? day)
 		{
+			Console.Clear(); Console.WriteLine("\x1b[3J");
 			if (currentDay == 1)
 			{
 				Console.WriteLine("You haven't simulated any days yet!");
-				return true;
+				return false;
 			}
 			
 			if (day == null)
@@ -119,7 +121,7 @@ namespace first_cs_project
 				int choice = menu.Call();
 
 				if (choice == 0)
-					return null;
+					return false;
 
 				DisplayLog(Logs[choice - 1]);
 				return true;
@@ -132,7 +134,7 @@ namespace first_cs_project
 				} catch (Exception)
 				{
 					Console.WriteLine("This day has not been simulated yet!");
-					return true;
+					return false;
 				}
 
 				DisplayLog(log);
@@ -142,6 +144,7 @@ namespace first_cs_project
 
 		static void DisplayLog(Log log)
 		{
+			Console.Clear();Console.WriteLine("\x1b[3J");
 			foreach (string e in log.Events)
 			{
 				Console.WriteLine(e);

@@ -6,6 +6,7 @@ namespace first_cs_project
 {
 	internal partial class Program
     {
+		
 		static int currentDay = 1;
 
 		static readonly List<Log> Logs = [];

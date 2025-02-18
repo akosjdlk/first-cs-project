@@ -22,7 +22,9 @@ namespace first_cs_project.src.classes
 				{
 					_selectedIndex = value;
 				}
-				WriteOptions();
+				
+				Console.Clear();Console.WriteLine("\x1b[3J");
+				ListOptions();
 			}
 		}
 
@@ -36,21 +38,38 @@ namespace first_cs_project.src.classes
 
 		public int Call()
 		{
-			WriteOptions();
-			return ListenForInput();
+			Console.Clear();Console.WriteLine("\x1b[3J");
+			ListOptions();
+			int ret = ListenForInput();
+			Console.Clear();Console.WriteLine("\x1b[3J");
+			return ret;
 		}
-		public void WriteOptions()
+		public void ListOptions()
 		{
-			Console.Clear();
 			Console.WriteLine("--------------------");
-			for (int i = 0;i < _menuOptions.Count;i++)
+			int height = Console.WindowHeight - 4;
+			int totalPages = (int)Math.Ceiling((double)_menuOptions.Count / height);
+			int currentPage = _selectedIndex / height;
+
+			WriteOptions(currentPage * height, Math.Min((currentPage + 1) * height, _menuOptions.Count));
+
+			Console.WriteLine("--------------------");
+			if (totalPages > 1)
+				Console.WriteLine($"Page {currentPage + 1} of {totalPages}");
+		}
+
+		private void WriteOptions(int startIndex = 0, int stopIndex = -1)
+		{
+			if (stopIndex == -1)
+				stopIndex = _menuOptions.Count;
+
+			for (int i = startIndex;i < stopIndex;i++)
 			{
 				if (i == _selectedIndex)
 					WriteHighlighted($"{i}. {_menuOptions[i]}");
 				else
 					Write($"{i}. {_menuOptions[i]}");
 			}
-			Console.WriteLine("--------------------");
 		}
 
 		static void WriteHighlighted(string s)
@@ -63,7 +82,7 @@ namespace first_cs_project.src.classes
 
 		public static string TextInput(string? prompt)
 		{
-			Console.Clear();
+			
 			Console.Write(prompt);
 			string input = Console.ReadLine()!;
 			return input;
@@ -78,7 +97,7 @@ namespace first_cs_project.src.classes
 
 		public static int? NumericInput(string prompt, bool allowNegative = false, bool allowZero = true)
 		{
-			Console.Clear();
+			
 			Console.Write(prompt);
 			string number = "";
 			while (true)
@@ -86,7 +105,10 @@ namespace first_cs_project.src.classes
 				string key = Console.ReadKey(true).Key.ToString();
 
 				if (key == "Escape")
+				{
+					Console.Clear();Console.WriteLine("\x1b[3J");
 					return null;
+				}
 
 				if (key == "Enter" && number != "" && number != "-")
 					break;
@@ -94,7 +116,7 @@ namespace first_cs_project.src.classes
 				if (key == "Backspace" && number != "")
 				{
 					number = number.Remove(number.Length - 1);
-					Console.Clear();
+					Console.Clear(); Console.WriteLine("\x1b[3J");
 					Console.Write(prompt + number);
 					continue;
 				}
@@ -115,7 +137,7 @@ namespace first_cs_project.src.classes
 					Console.Write(num);
 				}
 			}
-
+			Console.Clear();Console.WriteLine("\x1b[3J");
 			return int.Parse(number);
 		}
 
@@ -153,10 +175,9 @@ namespace first_cs_project.src.classes
 						return SelectedIndex;
 
 					default:
-						continue;
+						break;
 				}
 			}
 		}
-
 	}
 }

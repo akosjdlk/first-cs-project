@@ -102,7 +102,7 @@ namespace first_cs_project
 				frequency = (int)f;
 				break;
 			}
-			Console.Clear();
+			
 			Train train = CreateTrain(accuracy, frequency, type);
 			Console.WriteLine($"Successfully created train: {train})");
 			Trains.Add(train);
